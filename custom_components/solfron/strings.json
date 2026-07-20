@@ -1,0 +1,56 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Solar Frontier Inverter",
+        "description": "Enter the IP address or hostname of your inverter.",
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "The IP address or hostname of the inverter on your local network."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the inverter.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This inverter is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Solar Frontier options",
+        "data": {
+          "scan_interval": "Update interval (seconds)",
+          "ip_check_interval": "IP/MAC re-check interval (seconds)",
+          "clock_check_interval": "Clock check interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "How often the inverter is polled for measurements and yields.",
+          "ip_check_interval": "How often the ARP table is checked to detect a changed IP address for the inverter's MAC.",
+          "clock_check_interval": "How often the inverter clock is compared to Home Assistant time (helps catch DST drift)."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "dc_power": { "name": "DC power" },
+      "dc_voltage": { "name": "DC voltage" },
+      "dc_current": { "name": "DC current" },
+      "ac_power": { "name": "AC power" },
+      "ac_voltage": { "name": "AC voltage" },
+      "ac_current": { "name": "AC current" },
+      "frequency": { "name": "Frequency" },
+      "yield_today": { "name": "Yield today" },
+      "yield_month": { "name": "Yield this month" },
+      "yield_year": { "name": "Yield this year" },
+      "yield_total": { "name": "Yield total" },
+      "clock_offset": { "name": "Clock offset" }
+    }
+  }
+}

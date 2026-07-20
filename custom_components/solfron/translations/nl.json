@@ -1,0 +1,56 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Solar Frontier omvormer",
+        "description": "Voer het IP-adres of de hostnaam van je omvormer in.",
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "Het IP-adres of de hostnaam van de omvormer in je lokale netwerk."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbinden met de omvormer is mislukt.",
+      "unknown": "Onverwachte fout."
+    },
+    "abort": {
+      "already_configured": "Deze omvormer is al geconfigureerd."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Solar Frontier opties",
+        "data": {
+          "scan_interval": "Ververs-interval (seconden)",
+          "ip_check_interval": "IP/MAC-hercontrole-interval (seconden)",
+          "clock_check_interval": "Klok-controle-interval (seconden)"
+        },
+        "data_description": {
+          "scan_interval": "Hoe vaak de omvormer wordt uitgelezen voor metingen en opbrengsten.",
+          "ip_check_interval": "Hoe vaak de ARP-tabel wordt gecontroleerd om een gewijzigd IP-adres voor de MAC van de omvormer te detecteren.",
+          "clock_check_interval": "Hoe vaak de omvormerklok wordt vergeleken met de Home Assistant-tijd (helpt zomer-/wintertijd-afwijking te detecteren)."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "dc_power": { "name": "DC-vermogen" },
+      "dc_voltage": { "name": "DC-spanning" },
+      "dc_current": { "name": "DC-stroom" },
+      "ac_power": { "name": "AC-vermogen" },
+      "ac_voltage": { "name": "AC-spanning" },
+      "ac_current": { "name": "AC-stroom" },
+      "frequency": { "name": "Frequentie" },
+      "yield_today": { "name": "Opbrengst vandaag" },
+      "yield_month": { "name": "Opbrengst deze maand" },
+      "yield_year": { "name": "Opbrengst dit jaar" },
+      "yield_total": { "name": "Opbrengst totaal" },
+      "clock_offset": { "name": "Klok-afwijking" }
+    }
+  }
+}

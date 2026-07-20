@@ -1,0 +1,17 @@
+{
+  "domain": "solfron",
+  "name": "Solar Frontier Inverter",
+  "codeowners": [
+    "@robmoria"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/robmoria/solfron",
+  "issue_tracker": "https://github.com/robmoria/solfron/issues",
+  "iot_class": "local_polling",
+  "loggers": [
+    "pysolfron"
+  ],
+  "requirements": [],
+  "integration_type": "device",
+  "version": "1.2.0"
+}
