@@ -16,6 +16,7 @@ _TAG_RE = re.compile(r"<[^>]+>")
 
 
 MEASUREMENT_FIELDS = {
+    # Single-phase / aggregate rows.
     "P DC": "dc_power",
     "U DC": "dc_voltage",
     "I DC": "dc_current",
@@ -23,6 +24,19 @@ MEASUREMENT_FIELDS = {
     "U AC": "ac_voltage",
     "I AC": "ac_current",
     "F AC": "frequency",
+    # Per-phase rows (three-phase inverters). Only set when the row is present.
+    "U AC1": "ac_voltage_l1",
+    "U AC2": "ac_voltage_l2",
+    "U AC3": "ac_voltage_l3",
+    "I AC1": "ac_current_l1",
+    "I AC2": "ac_current_l2",
+    "I AC3": "ac_current_l3",
+    "P AC1": "ac_power_l1",
+    "P AC2": "ac_power_l2",
+    "P AC3": "ac_power_l3",
+    "F AC1": "frequency_l1",
+    "F AC2": "frequency_l2",
+    "F AC3": "frequency_l3",
 }
 
 

@@ -50,7 +50,19 @@
       "yield_month": { "name": "Opbrengst deze maand" },
       "yield_year": { "name": "Opbrengst dit jaar" },
       "yield_total": { "name": "Opbrengst totaal" },
-      "clock_offset": { "name": "Klok-afwijking" }
+      "clock_offset": { "name": "Klok-afwijking" },
+      "ac_power_l1": { "name": "AC-vermogen L1" },
+      "ac_power_l2": { "name": "AC-vermogen L2" },
+      "ac_power_l3": { "name": "AC-vermogen L3" },
+      "ac_voltage_l1": { "name": "AC-spanning L1" },
+      "ac_voltage_l2": { "name": "AC-spanning L2" },
+      "ac_voltage_l3": { "name": "AC-spanning L3" },
+      "ac_current_l1": { "name": "AC-stroom L1" },
+      "ac_current_l2": { "name": "AC-stroom L2" },
+      "ac_current_l3": { "name": "AC-stroom L3" },
+      "frequency_l1": { "name": "Frequentie L1" },
+      "frequency_l2": { "name": "Frequentie L2" },
+      "frequency_l3": { "name": "Frequentie L3" }
     }
   }
 }

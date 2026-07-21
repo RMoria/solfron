@@ -176,6 +176,70 @@ SENSORS: tuple[SolfronSensorDescription, ...] = (
 )
 
 
+def _phase_descriptions() -> tuple[SolfronSensorDescription, ...]:
+    """Per-phase sensor descriptions for three-phase inverters.
+
+    These are only instantiated when the inverter actually reports the
+    corresponding value (see async_setup_entry), so single-phase inverters
+    are unaffected.
+    """
+
+    descriptions: list[SolfronSensorDescription] = []
+    for phase in (1, 2, 3):
+        descriptions.extend(
+            (
+                SolfronSensorDescription(
+                    key=f"ac_power_l{phase}",
+                    translation_key=f"ac_power_l{phase}",
+                    device_class=SensorDeviceClass.POWER,
+                    native_unit_of_measurement=UnitOfPower.WATT,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    suggested_display_precision=0,
+                    value_fn=lambda d, p=phase: getattr(
+                        d.measurements, f"ac_power_l{p}"
+                    ),
+                ),
+                SolfronSensorDescription(
+                    key=f"ac_voltage_l{phase}",
+                    translation_key=f"ac_voltage_l{phase}",
+                    device_class=SensorDeviceClass.VOLTAGE,
+                    native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    suggested_display_precision=1,
+                    value_fn=lambda d, p=phase: getattr(
+                        d.measurements, f"ac_voltage_l{p}"
+                    ),
+                ),
+                SolfronSensorDescription(
+                    key=f"ac_current_l{phase}",
+                    translation_key=f"ac_current_l{phase}",
+                    device_class=SensorDeviceClass.CURRENT,
+                    native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    suggested_display_precision=2,
+                    value_fn=lambda d, p=phase: getattr(
+                        d.measurements, f"ac_current_l{p}"
+                    ),
+                ),
+                SolfronSensorDescription(
+                    key=f"frequency_l{phase}",
+                    translation_key=f"frequency_l{phase}",
+                    device_class=SensorDeviceClass.FREQUENCY,
+                    native_unit_of_measurement=UnitOfFrequency.HERTZ,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    suggested_display_precision=2,
+                    value_fn=lambda d, p=phase: getattr(
+                        d.measurements, f"frequency_l{p}"
+                    ),
+                ),
+            )
+        )
+    return tuple(descriptions)
+
+
+PHASE_SENSORS: tuple[SolfronSensorDescription, ...] = _phase_descriptions()
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: SolfronConfigEntry,
@@ -184,10 +248,20 @@ async def async_setup_entry(
     """Set up Solar Frontier sensors."""
 
     runtime = entry.runtime_data
+    device = runtime.data.data
 
     entities: list[SensorEntity] = [
         SolfronSensor(runtime.data, description) for description in SENSORS
     ]
+
+    # Three-phase inverters (e.g. SF-WR-5503x) report per-phase values; only
+    # add those sensors when the inverter actually provides them.
+    entities.extend(
+        SolfronSensor(runtime.data, description)
+        for description in PHASE_SENSORS
+        if description.value_fn(device) is not None
+    )
+
     entities.append(SolfronClockOffsetSensor(runtime.clock, runtime.data))
 
     async_add_entities(entities)

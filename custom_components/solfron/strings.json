@@ -50,7 +50,19 @@
       "yield_month": { "name": "Yield this month" },
       "yield_year": { "name": "Yield this year" },
       "yield_total": { "name": "Yield total" },
-      "clock_offset": { "name": "Clock offset" }
+      "clock_offset": { "name": "Clock offset" },
+      "ac_power_l1": { "name": "AC power L1" },
+      "ac_power_l2": { "name": "AC power L2" },
+      "ac_power_l3": { "name": "AC power L3" },
+      "ac_voltage_l1": { "name": "AC voltage L1" },
+      "ac_voltage_l2": { "name": "AC voltage L2" },
+      "ac_voltage_l3": { "name": "AC voltage L3" },
+      "ac_current_l1": { "name": "AC current L1" },
+      "ac_current_l2": { "name": "AC current L2" },
+      "ac_current_l3": { "name": "AC current L3" },
+      "frequency_l1": { "name": "Frequency L1" },
+      "frequency_l2": { "name": "Frequency L2" },
+      "frequency_l3": { "name": "Frequency L3" }
     }
   }
 }

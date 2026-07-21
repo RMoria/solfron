@@ -21,7 +21,7 @@ CONF_IP_CHECK_INTERVAL = "ip_check_interval"
 CONF_CLOCK_CHECK_INTERVAL = "clock_check_interval"
 
 # Defaults, in seconds.
-DEFAULT_SCAN_INTERVAL = 60  # measurements / yields
+DEFAULT_SCAN_INTERVAL = 300  # measurements / yields (5 minutes)
 DEFAULT_IP_CHECK_INTERVAL = 3600  # ARP-based IP<->MAC re-check
 DEFAULT_CLOCK_CHECK_INTERVAL = 86400  # LCD clock / time-difference check
 
