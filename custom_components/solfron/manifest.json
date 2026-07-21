@@ -6,12 +6,12 @@
   ],
   "config_flow": true,
   "documentation": "https://github.com/RMoria/solfron",
-  "issue_tracker": "https://github.com/RMoria/solfron/issues",
+  "integration_type": "device",
   "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/RMoria/solfron/issues",
   "loggers": [
     "pysolfron"
   ],
   "requirements": [],
-  "integration_type": "device",
   "version": "1.2.2"
 }
