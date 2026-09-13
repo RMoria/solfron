@@ -70,7 +70,10 @@ class SolfronConfigFlow(ConfigFlow, domain=DOMAIN):
                     )
 
                 await self.async_set_unique_id(mac or host)
-                self._abort_if_unique_id_configured()
+                # reload_on_update=False: this integration already reloads via
+                # its own config-entry update listener. Combining both is
+                # deprecated and becomes an error in HA 2026.12.
+                self._abort_if_unique_id_configured(reload_on_update=False)
 
                 return self.async_create_entry(
                     title=DEFAULT_NAME,

@@ -118,6 +118,23 @@ subnet. A periodic Nmap scan populates that entry, improving the chance the
 automatic IP recovery finds the new address. Without it, recovery still works as
 long as the new IP ends up in the ARP table by other means.
 
+## Known issues
+
+**Blank icon in the HACS store.** This integration ships its own brand images
+(`custom_components/solfron/brand/`), the mechanism introduced in Home Assistant
+2026.3. They render correctly in Home Assistant itself (Devices & services, the
+device page, the config flow). The HACS panel, however, still loads icons
+straight from the brands CDN instead of Home Assistant's local brands proxy, so
+custom integrations show a grey placeholder there. This affects all custom
+integrations added since early 2026 and cannot be fixed from this repository —
+see [hacs/integration#5171](https://github.com/hacs/integration/issues/5171).
+
+**Separate device entry (HA 2026.8+).** Since Home Assistant 2026.8, device
+identifiers and connections are unique per config entry, so this inverter is no
+longer merged into a single device with other integrations that happen to know
+the same MAC address (for example Nmap Tracker). You may see a second device
+page after upgrading; this is expected and not a fault of this integration.
+
 ## Installation
 
 ### HACS (recommended)
