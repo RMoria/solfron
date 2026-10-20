@@ -51,7 +51,10 @@ class SolfronClient:
             with urlopen(url, timeout=self._timeout) as response:
                 return response.read()
 
-        except URLError as err:
+        except (URLError, OSError) as err:
+            # URLError covers DNS/refused connections; OSError also covers a
+            # socket timeout or connection reset raised by response.read()
+            # (TimeoutError, ConnectionResetError).
             raise SolfronConnectionError(
                 f"Unable to download '{filename}' from {self._host}"
             ) from err
