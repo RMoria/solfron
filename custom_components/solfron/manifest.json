@@ -1,6 +1,9 @@
 {
   "domain": "solfron",
   "name": "Solar Frontier Inverter",
+  "categories": [
+    "energy.solar_batteries"
+  ],
   "codeowners": [
     "@RMoria"
   ],
@@ -13,5 +16,5 @@
     "pysolfron"
   ],
   "requirements": [],
-  "version": "1.2.4"
+  "version": "1.2.5"
 }

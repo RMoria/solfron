@@ -106,10 +106,10 @@ still maps to that MAC and recovers a new IP from the ARP table if it changed
 table (`/proc/net/arp`) directly, and normal polling keeps the inverter in that
 table.
 
-If you also run Home Assistant's **Nmap Tracker** integration, you may notice its
-`device_tracker` entity attached to the same device here — that's just Home
-Assistant merging entities that share the same **MAC address** (which this
-integration sets on the device); it is not a dependency.
+If you also run Home Assistant's **Nmap Tracker** integration, it knows the same
+**MAC address**. On Home Assistant 2026.7 and older, its `device_tracker` entity
+was merged into this device; since 2026.8 each integration keeps its own device.
+Either way it is not a dependency.
 
 That said, Nmap Tracker (or any subnet-scanning tool) can *help* in one case: if
 the inverter's IP changes via DHCP, Home Assistant no longer talks to the old IP,
@@ -120,14 +120,12 @@ long as the new IP ends up in the ARP table by other means.
 
 ## Known issues
 
-**Blank icon in the HACS store.** This integration ships its own brand images
-(`custom_components/solfron/brand/`), the mechanism introduced in Home Assistant
-2026.3. They render correctly in Home Assistant itself (Devices & services, the
-device page, the config flow). The HACS panel, however, still loads icons
-straight from the brands CDN instead of Home Assistant's local brands proxy, so
-custom integrations show a grey placeholder there. This affects all custom
-integrations added since early 2026 and cannot be fixed from this repository —
-see [hacs/integration#5171](https://github.com/hacs/integration/issues/5171).
+**Blank icon in the old HACS store (HA 2026.10 and older).** This integration
+ships its own brand images in `custom_components/solfron/brand/`. The Marketplace
+in Home Assistant 2026.11+ shows them, also before installing. The separate HACS
+panel on older Home Assistant versions shows a grey placeholder instead; that is
+a HACS limitation ([hacs/integration#5171](https://github.com/hacs/integration/issues/5171))
+and won't be fixed there.
 
 **Separate device entry (HA 2026.8+).** Since Home Assistant 2026.8, device
 identifiers and connections are unique per config entry, so this inverter is no
@@ -137,11 +135,19 @@ page after upgrading; this is expected and not a fault of this integration.
 
 ## Installation
 
-### HACS (recommended)
+[![Open in your Home Assistant instance.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=RMoria&repository=solfron&category=integration)
 
-1. In HACS, add this repository as a **custom repository** (category: *Integration*).
-2. Search for **Solar Frontier Inverter** and install it.
-3. Restart Home Assistant.
+### Marketplace (Home Assistant 2026.11 and newer, recommended)
+
+1. Go to **Settings → Marketplace**.
+2. Search for **Solar Frontier Inverter** and select **Install**.
+3. The setup flow opens straight away; enter the inverter's IP address.
+
+### HACS (Home Assistant 2026.10 and older)
+
+1. Open **HACS** and search for **Solar Frontier Inverter**.
+2. Install it and restart Home Assistant.
+3. Add it under Settings → Devices & services.
 
 ### Manual
 
