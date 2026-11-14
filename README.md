@@ -93,8 +93,13 @@ resolve the inverter's MAC from the local ARP table, and the MAC is stored as
 the config-entry identity. If the inverter gets a new IP (non-static DHCP), the
 integration finds it again by its MAC: at startup, whenever updates start
 failing, and on a periodic check (default hourly). When the MAC isn't in the
-ARP table yet, it briefly probes the local /24 subnet so the kernel learns the
-new address.
+ARP table yet, it briefly probes Home Assistant's local subnet so the kernel
+learns the new address. On networks larger than a /23 it probes the /23 around
+the old address, so it doesn't flood the kernel's neighbour table.
+
+If no MAC could be found when the integration was added, it keeps trying to
+learn it (at most hourly) after successful reads, and enables IP recovery as
+soon as it has one.
 
 You can also change the address yourself: on the integration card, open the
 menu (⋮) and choose **Reconfigure**.

@@ -6,6 +6,7 @@ import asyncio
 from datetime import datetime, timedelta
 import ipaddress
 import logging
+import socket
 import time
 
 from homeassistant.const import CONF_HOST, CONF_MAC, Platform
@@ -16,6 +17,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from .const import (
     CONF_IP_CHECK_INTERVAL,
     DEFAULT_IP_CHECK_INTERVAL,
+    DOMAIN,
     SolfronConfigEntry,
 )
 from .coordinator import (
@@ -24,7 +26,7 @@ from .coordinator import (
     SolfronRuntimeData,
 )
 from .pysolfron import SolfronClient
-from .pysolfron.discovery import find_ips, prime_arp
+from .pysolfron.discovery import find_ips, find_mac, prime_arp
 from .pysolfron.exceptions import DiscoveryError
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,6 +39,8 @@ PLATFORMS: list[Platform] = [
 _PRIME_SETTLE_SECONDS = 3
 # Minimum time between IP recovery attempts triggered by failed updates.
 _RECOVERY_COOLDOWN_SECONDS = 600
+# Minimum time between attempts to learn a missing MAC address.
+_MAC_LEARN_COOLDOWN_SECONDS = 3600
 
 
 async def async_setup_entry(
@@ -95,6 +99,15 @@ async def async_setup_entry(
         entry.async_on_unload(
             data_coordinator.async_add_listener(
                 _make_failure_watcher(hass, entry, data_coordinator)
+            )
+        )
+    else:
+        # No MAC was found when the entry was created, so IP recovery can't
+        # work yet. Keep trying to learn it after successful reads; storing it
+        # reloads the entry with recovery enabled.
+        entry.async_on_unload(
+            data_coordinator.async_add_listener(
+                _make_mac_learner(hass, entry, data_coordinator)
             )
         )
 
@@ -225,6 +238,77 @@ def _make_failure_watcher(
         running = True
         entry.async_create_background_task(
             hass, _recover(), "solfron_ip_recovery"
+        )
+
+    return _on_update
+
+
+def _lookup_mac(host: str) -> str:
+    """Resolve host to an IP and look its MAC up in the ARP table (blocking)."""
+
+    ip = host if _is_ipv4(host) else socket.gethostbyname(host)
+    return find_mac(ip)
+
+
+def _make_mac_learner(
+    hass: HomeAssistant,
+    entry: SolfronConfigEntry,
+    coordinator: SolfronDataUpdateCoordinator,
+):
+    """Build a coordinator listener that stores the MAC once it can be found."""
+
+    last_attempt = -_MAC_LEARN_COOLDOWN_SECONDS
+    running = False
+
+    async def _learn() -> None:
+        nonlocal running
+        try:
+            host = entry.data[CONF_HOST]
+            try:
+                mac = await hass.async_add_executor_job(_lookup_mac, host)
+            except (DiscoveryError, OSError) as err:
+                _LOGGER.debug("MAC for %s not found yet: %s", host, err)
+                return
+
+            if entry.data.get(CONF_MAC):
+                return
+
+            # Use the MAC as unique ID too (it was the host until now), unless
+            # another entry already uses it.
+            unique_id = entry.unique_id
+            if not any(
+                other.unique_id == mac
+                for other in hass.config_entries.async_entries(DOMAIN)
+                if other.entry_id != entry.entry_id
+            ):
+                unique_id = mac
+
+            _LOGGER.info(
+                "Learned MAC %s for Solar Frontier inverter at %s; "
+                "automatic IP recovery is now enabled",
+                mac,
+                host,
+            )
+            hass.config_entries.async_update_entry(
+                entry,
+                unique_id=unique_id,
+                data={**entry.data, CONF_MAC: mac},
+            )
+        finally:
+            running = False
+
+    @callback
+    def _on_update() -> None:
+        nonlocal last_attempt, running
+        if not coordinator.last_update_success or running:
+            return
+        now = time.monotonic()
+        if now - last_attempt < _MAC_LEARN_COOLDOWN_SECONDS:
+            return
+        last_attempt = now
+        running = True
+        entry.async_create_background_task(
+            hass, _learn(), "solfron_mac_learning"
         )
 
     return _on_update
