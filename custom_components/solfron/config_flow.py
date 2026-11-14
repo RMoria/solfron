@@ -90,6 +90,59 @@ class SolfronConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
+    async def async_step_reconfigure(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> ConfigFlowResult:
+        """Change the inverter's IP address or hostname."""
+
+        entry = self._get_reconfigure_entry()
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            host = user_input[CONF_HOST]
+            client = SolfronClient(host)
+
+            try:
+                await self.hass.async_add_executor_job(client.get_device)
+            except SolfronError:
+                errors["base"] = "cannot_connect"
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected error connecting to inverter")
+                errors["base"] = "unknown"
+            else:
+                mac = ""
+                try:
+                    mac = await self.hass.async_add_executor_job(find_mac, host)
+                except DiscoveryError:
+                    pass
+
+                stored_mac = entry.data.get(CONF_MAC)
+                if mac and stored_mac and mac != stored_mac:
+                    return self.async_abort(reason="wrong_device")
+
+                data = {**entry.data, CONF_HOST: host}
+                if mac:
+                    data[CONF_MAC] = mac
+
+                # Plain update + abort: the entry's own update listener reloads
+                # it. (async_update_reload_and_abort together with that
+                # listener is deprecated and an error from HA 2026.12.)
+                self.hass.config_entries.async_update_entry(entry, data=data)
+                return self.async_abort(reason="reconfigure_successful")
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_HOST, default=entry.data.get(CONF_HOST, "")
+                    ): str,
+                }
+            ),
+            errors=errors,
+        )
+
     @staticmethod
     @callback
     def async_get_options_flow(

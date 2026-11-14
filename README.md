@@ -90,9 +90,14 @@ After adding the integration, use **Configure** on the integration card to set:
 
 The MAC address is the leading identifier. On setup the IP you enter is used to
 resolve the inverter's MAC from the local ARP table, and the MAC is stored as
-the config-entry identity. A background check (default hourly) verifies the IP
-still maps to that MAC and recovers a new IP from the ARP table if it changed
-(useful for non-static DHCP).
+the config-entry identity. If the inverter gets a new IP (non-static DHCP), the
+integration finds it again by its MAC: at startup, whenever updates start
+failing, and on a periodic check (default hourly). When the MAC isn't in the
+ARP table yet, it briefly probes the local /24 subnet so the kernel learns the
+new address.
+
+You can also change the address yourself: on the integration card, open the
+menu (⋮) and choose **Reconfigure**.
 
 > **Note:** ARP-based lookup only works when Home Assistant can see the inverter
 > in its ARP table — i.e. Home Assistant runs on the same network segment
